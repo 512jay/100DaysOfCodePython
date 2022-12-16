@@ -22,3 +22,5 @@ Oh, you caught that I changed the product, yeah I did that.
 Apparently lxml just needs to be installed in the environment for BeautifulSoup
 to be able to use it. I removed the import after PyCharm complained about it
 not being used and the parser still works.
+
+While working on this project I had to brush up on [environmental variables](https://www.geeksforgeeks.org/python-os-environ-object/) again.
