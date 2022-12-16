@@ -9,8 +9,13 @@ headers = {
 }
 
 response = requests.get(url, headers=headers)
-print(response.status_code)
 soup = BeautifulSoup(response.text, 'lxml')
-print(soup.title)
-price = soup.find(class_="a-price-whole")
-print(float(price.text))
+price_soup = soup.find(class_="a-price-whole")
+price = float(price_soup.text)
+
+#  Begin part 2
+target_price = 180
+if price < target_price:
+    subject = "Amazon Price Alert!"
+    message = f"{soup.title.text}\nnow ${price}\n{url}"
+    print(subject, "\n", message)
