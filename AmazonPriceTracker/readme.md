@@ -17,6 +17,7 @@ _encoding=UTF8
 
 Realized that a lot of the link info after the '?' was not needed. New link:
 https://www.amazon.com/Raspberry-Model-2019-Quad-Bluetooth/dp/B07TC2BK1X/
+Oh, you caught that I changed the product, yeah I did that.
 
 Apparently lxml just needs to be installed in the environment for BeautifulSoup
 to be able to use it. I removed the import after PyCharm complained about it
