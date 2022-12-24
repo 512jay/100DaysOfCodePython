@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 import time
 import os
 email = os.environ.get('email')
@@ -10,7 +11,8 @@ service = Service('/Development/chromedriver')
 
 service.start()
 
-url = "https://www.linkedin.com/jobs/search/?currentJobId=3349997861&f_AL=true&f_E=2&f_WT=2&keywords=python%20developer%20&refresh=true&sortBy=R "
+url = "https://www.linkedin.com/jobs/search/?currentJobId=3349997861&f_AL=true&f_E=2&f_WT=2&keywords=python" \
+      "%20developer%20&refresh=true&sortBy=R "
 
 
 driver = webdriver.Remote(service.service_url)
@@ -25,8 +27,7 @@ username_input.send_keys(email)
 password_input = driver.find_element(by=By.ID, value="password")
 password_input.send_keys(password)
 
-sign_in_button = driver.find_element(by=By.CLASS_NAME, value="btn__primary--large")
-sign_in_button.click()
+password_input.send_keys(Keys.ENTER)
 
 time.sleep(30)
 driver.quit()
