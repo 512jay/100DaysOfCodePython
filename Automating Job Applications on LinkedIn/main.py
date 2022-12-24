@@ -29,5 +29,8 @@ password_input.send_keys(password)
 
 password_input.send_keys(Keys.ENTER)
 
+easy_apply_button = driver.find_element(by=By.CLASS_NAME, value="jobs-apply-button")
+easy_apply_button.click()
+
 time.sleep(30)
 driver.quit()
