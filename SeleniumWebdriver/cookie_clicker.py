@@ -7,9 +7,11 @@ service = Service('/Development/chromedriver')
 
 service.start()
 
-driver = webdriver.Remote(service.service_url)
 url = "https://orteil.dashnet.org/cookieclicker/"
-
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+}
+driver = webdriver.Remote(service.service_url)
 driver.get(url)
 time.sleep(5)
 english = driver.find_element(by=By.ID, value="langSelect-EN")
