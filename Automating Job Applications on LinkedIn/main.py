@@ -15,7 +15,7 @@ url = "https://www.linkedin.com/jobs/search/?currentJobId=3283361601&f_AL=true&f
 
 driver = webdriver.Remote(service.service_url)
 driver.get(url)
-time.sleep(3)
+
 sign_in = driver.find_element(by=By.LINK_TEXT, value="Sign in")
 sign_in.click()
 
@@ -26,19 +26,24 @@ password_input = driver.find_element(by=By.ID, value="password")
 password_input.send_keys(password)
 
 password_input.send_keys(Keys.ENTER)
-
 # Close messages overlay
-message_overlay = driver.find_element(by=By.ID, value="ember114")
-message_overlay.click()
+time.sleep(6)
+# message_overlay = driver.find_element(by=By.CLASS_NAME, value="mercado-match")
+# message_overlay.click()
 
-result_text = driver.find_element(by=By.CLASS_NAME, value="jobs-search-results-list__title-heading")
-result = result_text.text.split("\n")
-number_of_jobs = int(result[1].split()[0])
-print(number_of_jobs)
-
-jobs = driver.find_elements(by=By.CLASS_NAME, value="job-card-container")
+#
+# result_text = driver.find_element(by=By.CLASS_NAME, value="jobs-search-results-list__title-heading")
+# result = result_text.text.split("\n")
+# number_of_jobs = int(result[1].split()[0])
+# print(number_of_jobs)
+#
+jobs = driver.find_elements(by=By.CLASS_NAME, value="job-card-container--clickable")
 for job in jobs:
+    time.sleep(2)
     print(job.text)
+    job.click()
+
+time.sleep(300)
 
 # next_btn = driver.find_element(by=By.CLASS_NAME, value="jobs-save-button")
 # next_btn.click()
@@ -52,5 +57,5 @@ for job in jobs:
 # follow_button.click()
 
 
-time.sleep(5000)
+time.sleep(10)
 driver.quit()
