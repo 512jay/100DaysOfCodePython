@@ -39,10 +39,10 @@ class InternetSpeedTwitterBot:
         self.driver.get(url)
         # login = self.driver.find_element(by=By.LINK_TEXT, value="Log in")
         # login.click()
-        time.sleep(10)
-        # google = self.driver.find_element(by=By.CSS_SELECTOR, value="title=Sign in with Google Button")
-        # google.click()
-        # time.sleep(60)
+        time.sleep(5)
+        google = self.driver.find_element(by=By.TAG_NAME, value="iframe")
+        google.click()
+        time.sleep(60)
 
     def quit(self):
         self.driver.quit()
