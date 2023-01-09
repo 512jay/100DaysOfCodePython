@@ -2,6 +2,7 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 import time
 
 PROMISED_DOWN = 200
@@ -9,7 +10,6 @@ PROMISED_UP = 100
 CHROME_DRIVER_PATH = "C:\\Development\\chromedriver.exe"
 TWITTER_EMAIL = os.environ.get("EMAIL")
 TWITTER_PASSWORD = os.environ.get("PASSWORD")
-
 
 class InternetSpeedTwitterBot:
     """A class for connecting to selenium"""
@@ -35,19 +35,27 @@ class InternetSpeedTwitterBot:
         print(up)
 
     def tweet_at_provider(self):
-        url = "https://twitter.com/i/flow/login"
+        url = "https://twitter.com"
         self.driver.get(url)
-        # login = self.driver.find_element(by=By.LINK_TEXT, value="Log in")
-        # login.click()
         time.sleep(5)
-        google = self.driver.find_element(by=By.TAG_NAME, value="iframe")
-        google.click()
-        time.sleep(2)
-        self.driver.switch_to.window(self.driver.window_handles[1])
+        login = self.driver.find_element(by=By.LINK_TEXT, value="Log in")
+        login.click()
+        time.sleep(5)
+        # # self.driver.switch_to.window(self.driver.window_handles[1])
+        # google = self.driver.find_element(by=By.TAG_NAME, value="iframe")
+        # google.click()
+        # time.sleep(2)
+        # self.driver.switch_to.window(self.driver.window_handles[1])
 
         input_email = self.driver.find_element(by=By.TAG_NAME, value="input")
-        input_email.send_keys(TWITTER_EMAIL)
-        time.sleep(30)
+        input_email.send_keys(TWITTER_EMAIL, Keys.ENTER)
+        time.sleep(5)
+        twitter_name = self.driver.find_element(by=By.TAG_NAME, value="input")
+        twitter_name.send_keys("DevCroesus", Keys.ENTER)
+        time.sleep(5)
+        password = self.driver.find_elements(by=By.TAG_NAME, value="input")
+        password[1].send_keys(TWITTER_PASSWORD, Keys.ENTER)
+        time.sleep(10)
 
     def quit(self):
         self.driver.quit()
