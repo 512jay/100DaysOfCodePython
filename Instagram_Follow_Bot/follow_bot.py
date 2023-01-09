@@ -32,4 +32,7 @@ class InstaFollower:
         pass
 
 
-follower = InstaFollower(SIMILAR_ACCOUNT)
+bot = InstaFollower(SIMILAR_ACCOUNT)
+bot.login()
+bot.find_followers()
+bot.follow()
