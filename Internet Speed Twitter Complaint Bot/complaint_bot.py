@@ -58,6 +58,16 @@ class InternetSpeedTwitterBot:
         password = self.driver.find_elements(by=By.TAG_NAME, value="input")
         password[1].send_keys(TWITTER_PASSWORD, Keys.ENTER)
         time.sleep(10)
+        tweet_button = self.driver.find_element(by=By.LINK_TEXT, value="Tweet")
+        tweet_button.click()
+        time.sleep(5)
+        # self.driver.switch_to.window(self.driver.window_handles[1])
+        # tweet_editor = self.driver.find_element(by=By.CLASS_NAME, value="DraftEditor-editorContainer")
+        active = self.driver.switch_to.active_element
+        # tweet_editor = self.driver.find_element(by=By.XPATH, value='//span[@data-text="true"]')
+        #
+        active.send_keys(f"Download speed was {self.down} Mps and upload was {self.up} Mps.")
+        time.sleep(20)
 
     def quit(self):
         self.driver.quit()
