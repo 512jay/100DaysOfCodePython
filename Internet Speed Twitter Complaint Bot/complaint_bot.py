@@ -31,10 +31,9 @@ class InternetSpeedTwitterBot:
         time.sleep(15)
         start_test.click()
         time.sleep(40)
-        down = self.driver.find_element(by=By.CLASS_NAME, value="download-speed").text
-        up = self.driver.find_element(by=By.CLASS_NAME, value="upload-speed").text
-        print(down)
-        print(up)
+        self.down = self.driver.find_element(by=By.CLASS_NAME, value="download-speed").text
+        self.up = self.driver.find_element(by=By.CLASS_NAME, value="upload-speed").text
+        time.sleep(5)
 
     def tweet_at_provider(self):
         url = "https://twitter.com"
@@ -43,15 +42,10 @@ class InternetSpeedTwitterBot:
         login = self.driver.find_element(by=By.LINK_TEXT, value="Log in")
         login.click()
         time.sleep(5)
-        # # self.driver.switch_to.window(self.driver.window_handles[1])
-        # google = self.driver.find_element(by=By.TAG_NAME, value="iframe")
-        # google.click()
-        # time.sleep(2)
-        # self.driver.switch_to.window(self.driver.window_handles[1])
-
         input_email = self.driver.find_element(by=By.TAG_NAME, value="input")
         input_email.send_keys(TWITTER_EMAIL, Keys.ENTER)
         time.sleep(5)
+        # May not need depending upon twitter login format
         twitter_name = self.driver.find_element(by=By.TAG_NAME, value="input")
         twitter_name.send_keys(os.environ.get("TWITTER_HANDLE"), Keys.ENTER)
         time.sleep(5)
@@ -61,11 +55,7 @@ class InternetSpeedTwitterBot:
         tweet_button = self.driver.find_element(by=By.LINK_TEXT, value="Tweet")
         tweet_button.click()
         time.sleep(5)
-        # self.driver.switch_to.window(self.driver.window_handles[1])
-        # tweet_editor = self.driver.find_element(by=By.CLASS_NAME, value="DraftEditor-editorContainer")
         active = self.driver.switch_to.active_element
-        # tweet_editor = self.driver.find_element(by=By.XPATH, value='//span[@data-text="true"]')
-        #
         active.send_keys(f"Download speed was {self.down} Mps and upload was {self.up} Mps.")
         time.sleep(20)
 
@@ -74,6 +64,6 @@ class InternetSpeedTwitterBot:
 
 
 complaint_bot = InternetSpeedTwitterBot()
-# complaint_bot.get_internet_speed()
+complaint_bot.get_internet_speed()
 complaint_bot.tweet_at_provider()
 complaint_bot.quit()
