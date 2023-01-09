@@ -42,7 +42,12 @@ class InternetSpeedTwitterBot:
         time.sleep(5)
         google = self.driver.find_element(by=By.TAG_NAME, value="iframe")
         google.click()
-        time.sleep(60)
+        time.sleep(2)
+        self.driver.switch_to.window(self.driver.window_handles[1])
+
+        input_email = self.driver.find_element(by=By.TAG_NAME, value="input")
+        input_email.send_keys(TWITTER_EMAIL)
+        time.sleep(30)
 
     def quit(self):
         self.driver.quit()
