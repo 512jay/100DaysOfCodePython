@@ -29,18 +29,24 @@ class InstaFollower:
         self.driver = webdriver.Remote(self.service.service_url)
         self.driver.maximize_window()
 
-    def click_tag_with_text(self, value: str, text: str):
+    def click_tag_with_text(self, tag: str, text: str):
         index = 0
-        buttons = self.driver.find_elements(by=By.TAG_NAME, value=value)
-        print("\n*******")
+        buttons = self.driver.find_elements(by=By.TAG_NAME, value=tag)
+        # print("\n*******")
         for button in buttons:
-            print(f"{index}: {button.text}")
+            # print(f"{index}: {button.text}")
             if text in button.text:
                 wait()
                 buttons[index].click()
                 break
             else:
                 index += 1
+
+    def scroll(self):
+        wait()
+        scrollable = self.driver.find_element(by=By.XPATH, value="/html/body/div[2]/div/div/div/div[2]/div/div/div["
+                                                                 "1]/div/div[2]/div/div/div/div/div[2]/div/div/div[2]")
+        self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", scrollable)
 
     def login(self):
         """Log in to Instagram and clear popups"""
@@ -55,22 +61,27 @@ class InstaFollower:
         # Click "Log in" button
         self.click_tag_with_text("button", "Log in")
         # Click "Not Now" button to saving login info
-        self.click_tag_with_text("button", "Not Now")
+        # self.click_tag_with_text("button", "Not Now")
         # Click "Not Now" to Notifications
         self.click_tag_with_text("button", "Not Now")
+        wait()
 
     def find_followers(self):
-        wait()
         url = f"https://www.instagram.com/{SIMILAR_ACCOUNT}/"
         self.driver.get(url)
         wait()
         self.click_tag_with_text("li", "followers")
         # scroll through followers.
-        # scrollable = self.driver.find_element(by=By.CSS_SELECTOR, value="div ._aano")
-        # delta_y = scrollable.rect['y']
-        # ActionChains(self.driver).scroll_by_amount(0, delta_y).perform()
+        # self.click_tag_with_text("div", "_aano")
+        # Select active element
+        # wait()
+        # followers_window = self.driver.find_element(by=By.XPATH,
+        # # value='/html/body/div[2]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[
+        # 2]')
+        # # /html/body/div[2]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[2]
+        for i in range(5):
+            self.scroll()
 
-        print("End of code!")
         time.sleep(600)
 
     def follow(self):
@@ -78,6 +89,7 @@ class InstaFollower:
 
     def quit(self):
         self.driver.quit()
+        print("End of Code!")
 
 
 bot = InstaFollower(SIMILAR_ACCOUNT)
