@@ -6,12 +6,14 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 CHROME_DRIVER_PATH = "/Development/chromedriver"
-SIMILAR_ACCOUNT = "thehightechrevolution"  # To be updated later
+SIMILAR_ACCOUNT = "DevCroesus"  # Use whatever account you want here
+# Using this code, I would appreciate a follow on the gram. https://www.instagram.com/DevCroesus/
 USERNAME = os.environ.get("USERNAME")
 PASSWORD = os.environ.get("PASSWORD")
 
 
 def wait():
+    """Generates a random wait time."""
     random_times = [5, 6, 7, 8, 9]
     time.sleep(choice(random_times))
 
@@ -28,17 +30,21 @@ class InstaFollower:
         self.driver.maximize_window()
 
     def click_tag_with_text(self, tag: str, text: str):
+        """Clicks on the tag which has the given text in it, if text is not found it does nothing."""
+
         index = 0
-        buttons = self.driver.find_elements(by=By.TAG_NAME, value=tag)
-        for button in buttons:
-            if text in button.text:
+        tags = self.driver.find_elements(by=By.TAG_NAME, value=tag)
+        for tag in tags:
+            if text in tag.text:
                 wait()
-                buttons[index].click()
+                tags[index].click()
                 break
             else:
                 index += 1
 
     def scroll_followers(self):
+        """Scrolls down the followers."""
+
         wait()
         # uncomment to use the xpath method
         # scrollable = self.driver.find_element(by=By.XPATH, value="/html/body/div[2]/div/div/div/div[2]/div/div/div["
@@ -47,7 +53,7 @@ class InstaFollower:
         self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", scrollable)
 
     def login(self):
-        """Log in to Instagram and clear popups"""
+        """Log in to Instagram and clear popups."""
 
         url = "https://www.instagram.com/accounts/login/"
         self.driver.get(url)
@@ -65,6 +71,8 @@ class InstaFollower:
         wait()
 
     def find_followers(self):
+        """Clicks on the followers for the target account."""
+
         url = f"https://www.instagram.com/{SIMILAR_ACCOUNT}/"
         self.driver.get(url)
         wait()
@@ -73,9 +81,12 @@ class InstaFollower:
             self.scroll_followers()
 
     def follow(self):
+        """Not implemented yet"""
         pass
 
     def quit(self):
+        """Provides a clean exit with some time for discovery"""
+
         time.sleep(120)  # A time delay for analyzing code.
         self.driver.quit()
         print("End of Code!")
