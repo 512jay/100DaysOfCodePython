@@ -6,7 +6,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 CHROME_DRIVER_PATH = "/Development/chromedriver"
-SIMILAR_ACCOUNT = "thehightechrevolution"  # Use whatever account you want here
+SIMILAR_ACCOUNT = "DevCroesus"  # Use whatever account you want here
+# Using this code, I would appreciate a follow on the gram. https://www.instagram.com/DevCroesus/
 USERNAME = os.environ.get("USERNAME")
 PASSWORD = os.environ.get("PASSWORD")
 
