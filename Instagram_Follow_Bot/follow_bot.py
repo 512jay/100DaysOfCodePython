@@ -12,15 +12,6 @@ USERNAME = os.environ.get("USERNAME")
 PASSWORD = os.environ.get("PASSWORD")
 
 
-def find_button_text_index(buttons, text) -> int:
-    index = 0
-    for button in buttons:
-        if button.text == text:
-            return index
-        else:
-            index += 1
-
-
 class InstaFollower:
     """A class for following Instagram followers from selected account."""
 
@@ -31,6 +22,18 @@ class InstaFollower:
         self.service.start()
         self.driver = webdriver.Remote(self.service.service_url)
         self.driver.maximize_window()
+
+    def click_tag_with_text(self, value: str, text: str):
+        index = 0
+        buttons = self.driver.find_elements(by=By.TAG_NAME, value=value)
+        print("\n*******")
+        for button in buttons:
+            print(f"{index}: {button.text}")
+            if text in button.text:
+                buttons[index].click()
+                break
+            else:
+                index += 1
 
     def login(self):
         """Log in to Instagram and clear popups"""
@@ -45,23 +48,25 @@ class InstaFollower:
 
         # Click "Log in" button
         time.sleep(5)
-        buttons = self.driver.find_elements(by=By.TAG_NAME, value="button")
-        buttons[find_button_text_index(buttons, "Log in")].click()
+        self.click_tag_with_text("button", "Log in")
 
         # Click "Not Now" button to saving login info
         time.sleep(10)
-        buttons = self.driver.find_elements(by=By.TAG_NAME, value="button")
-        buttons[find_button_text_index(buttons, "Not Now")].click()
+        self.click_tag_with_text("button", "Not Now")
 
         # Click "Not Now" to Notifications
         time.sleep(5)
-        buttons = self.driver.find_elements(by=By.TAG_NAME, value="button")
-        buttons[find_button_text_index(buttons, "Not Now")].click()
-
-        time.sleep(30)
+        self.click_tag_with_text("button", "Not Now")
+        time.sleep(5)
 
     def find_followers(self):
-        pass
+        time.sleep(5)
+        url = f"https://www.instagram.com/{SIMILAR_ACCOUNT}/"
+        self.driver.get(url)
+        time.sleep(5)
+        self.click_tag_with_text("li", "followers")
+        print("End of code!")
+        time.sleep(600)
 
     def follow(self):
         pass
