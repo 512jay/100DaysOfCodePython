@@ -71,7 +71,7 @@ class InstaFollower:
         wait()
 
     def find_followers(self):
-        """"Clicks on the followers for the target account."""
+        """Clicks on the followers for the target account."""
 
         url = f"https://www.instagram.com/{SIMILAR_ACCOUNT}/"
         self.driver.get(url)
