@@ -7,5 +7,4 @@ headers = {
                   "Safari/537.36",
 }
 
-form_url = "https://docs.google.com/forms/d/e/1FAIpQLSeSje4g5_LwswlvWkjAAYopsu7ZJo6dRzpjakbQFn8wiqpQ3A/viewform?usp" \
-           "=sf_link"
+form_url = "https://docs.google.com/forms/d/e/1FAIpQLSeSje4g5_LwswlvWkjAAYopsu7ZJo6dRzpjakbQFn8wiqpQ3A/viewform?usp=sf_link"
