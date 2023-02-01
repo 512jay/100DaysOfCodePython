@@ -23,9 +23,10 @@ def contact():
     return render_template("contact.html")
 
 
-@app.route("/post.html")
-def post():
-    return render_template("post.html")
+@app.route("/post.html/<num>")
+def post(num):
+    post = datas[int(num) - 1]
+    return render_template("post.html", post=post)
 
 
 if __name__ == "__main__":
