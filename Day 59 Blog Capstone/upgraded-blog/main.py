@@ -5,12 +5,12 @@ url = "https://api.npoint.io/cc03a5956b41677ec7b6"
 app = Flask(__name__)
 
 response = requests.get(url)
-data = response.json()
-print(data)
+datas = response.json()
+
 
 @app.route('/')
 def get_all_posts():
-    return render_template("index.html")
+    return render_template("index.html", datas=datas)
 
 
 @app.route("/about.html")
