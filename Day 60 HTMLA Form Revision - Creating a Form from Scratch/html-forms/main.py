@@ -9,7 +9,7 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["POST", "GET"])
 def receive_data():
     if request.method == "POST":
         return f"<h1>Name: {request.form['name']}, Password: {request.form['password']}"
