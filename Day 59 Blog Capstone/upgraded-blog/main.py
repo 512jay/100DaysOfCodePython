@@ -1,5 +1,13 @@
 from flask import Flask, render_template, request
 import requests
+import smtplib
+import os
+
+GMAIL = "johnwesleydavisII@gmail.com"
+GMAIL_SMTP = "smtp.gmail.com"
+GMAIL_PASSWORD = os.environ.get("GMAIL_PASSWORD")
+print(GMAIL_PASSWORD)
+YAHOO = "johnwesleydavis@yahoo.com"
 
 url = "https://api.npoint.io/cc03a5956b41677ec7b6"
 app = Flask(__name__)
@@ -26,7 +34,16 @@ def contact():
         print(data["email"])
         print(data["phone"])
         print(data["message"])
+        from_email = data["email"]
+        name = data["name"]
+        message = data["message"]
+
+        send_email(email=YAHOO,
+                   from_email = from_email,
+                   subject = f"Contact Form from {name}",
+                   message = message)
         return render_template("contact.html", header="Successfully sent your message")
+
     return render_template("contact.html", header="Contact Me")
 
 
@@ -36,26 +53,16 @@ def post(num):
     return render_template("post.html", post=post_data)
 
 
-@app.route("/form-entry", methods=["POST", "GET"])
-def receive_data():
-    print(request.method)
-    # Write your code here.
-    if request.method == "POST":
-        return "<h1>Successfully sent your message</h1>"
-
-        # print(type(request))
-        # name = request.form["name"]
-        # email = request.form["email"]
-        # phone = request.form["phone"]
-        # message = request.form["message"]
-        #
-        # return f"<h1>Successfully sent your message</h1>\n" \
-        #        f"{name}\n" \
-        #        f"{email}\n" \
-        #        f"{phone}\n" \
-        #        f"{message}"
-
-    return f"It did not work!"
+def send_email(email, from_email, subject, message):
+    msg = f"Subject:{subject}\n\n{message}"
+    with smtplib.SMTP(GMAIL_SMTP) as connection:
+        connection.starttls()
+        connection.login(user=GMAIL, password=GMAIL_PASSWORD)
+        connection.sendmail(
+            from_addr=from_email,
+            to_addrs=email,
+            msg=msg
+        )
 
 
 if __name__ == "__main__":
