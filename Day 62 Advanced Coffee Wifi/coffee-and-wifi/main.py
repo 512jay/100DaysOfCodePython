@@ -48,8 +48,8 @@ def add_cafe():
     # Make the form write a new row into cafe-data.csv
     # with   if form.validate_on_submit()
         with open('cafe-data.csv', 'a', encoding="utf8") as csv_file:
-            data = f"\n{form.cafe.data},{form.url.data},{form.opening_time.data},{form.closing_time.data}," \
-                   f"{form.coffee_rating.data},{form.wifi_strength.data},{form.power_sockets.data}"
+            data = f"{form.cafe.data},{form.url.data},{form.opening_time.data},{form.closing_time.data}," \
+                   f"{form.coffee_rating.data},{form.wifi_strength.data},{form.power_sockets.data}\n"
             csv_file.write(data)
             print(data)
     return render_template('add.html', form=form)
