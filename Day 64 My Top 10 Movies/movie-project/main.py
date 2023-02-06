@@ -5,6 +5,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 import requests
+import os
+
+TMDB_KEY = os.environ.get('TMDB_KEY')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "This is the big secret"
@@ -86,6 +89,19 @@ def delete_movie():
     db.session.delete(movie_to_delete)
     db.session.commit()
     return redirect(url_for('home'))
+
+
+class AddMovieForm(FlaskForm):
+    title = StringField('Movie Title', validators=[DataRequired()])
+    submit = SubmitField('Add Movie')
+
+
+@app.route("/add", methods=['GET', 'POST'])
+def add_movie():
+    form = AddMovieForm()
+    if form.validate_on_submit():
+        return redirect(url_for('home'))
+    return render_template('add.html', form=form)
 
 
 if __name__ == '__main__':
