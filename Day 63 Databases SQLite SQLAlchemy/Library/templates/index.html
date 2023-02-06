@@ -7,9 +7,13 @@
 <body>
 <h1>My Library</h1>
     <ul>
-        {% if library == [] %}
+        {% if library %}
             {% for book in library %}
-            <li>{{book.title}} - {{book.author}} - {{book.rating}}</li>
+            <li>
+                <a href="{{url_for('delete', book_id=book.id)}}">Delete</a>
+                {{book.title}} - {{book.author}} - {{book.rating}}
+                <a href="{{url_for('edit', book_id=book.id)}}">Edit Rating</a>
+            </li>
             {% endfor %}
         {% else %}
             <li>Library is empty.</li>
