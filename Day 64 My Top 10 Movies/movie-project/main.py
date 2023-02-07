@@ -106,7 +106,6 @@ def select_movie():
               f'&query={movie}&page=1&include_adult=false'
         response = requests.get(url, headers=headers)
         results = response.json()['results']
-        # return results
         return render_template('select.html', movie_list=results)
     return render_template('add.html', form=form)
 

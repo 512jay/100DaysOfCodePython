@@ -15,7 +15,7 @@
     <h1 class="heading">Select Movie</h1>
     {% for movie in movie_list %}
       <p>
-        <a href="https://api.themoviedb.org/3/movie/{{movie.id}}?api_key=662293028261dcfff034e953fe399742&language=en-US">
+        <a href="{{url_for('add_movie_to_db', movie_id=movie.id)}}">
             {{movie.title}} - {{movie.release_date}}</a>
       </p>
     {% endfor %}
