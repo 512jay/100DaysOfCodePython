@@ -47,15 +47,10 @@ def home():
     rank = len(top_movies)
     for movie in top_movies:
         Movie.query.get(movie.id).ranking = rank
-        db.session.commit()
         rank -= 1
-    # add rankings
+    db.session.commit()
+    return render_template('index.html', movies=top_movies)
 
-    movies = top_movies
-    for movie in top_movies:
-        print(movie)
-
-    return render_template('index.html', movies=movies)
 
 class RateMovieForm(FlaskForm):
     rating = StringField('Your rating out of 10 e.g. 7.5', validators=[DataRequired()])
