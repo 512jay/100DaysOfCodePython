@@ -33,34 +33,29 @@ class Movie(db.Model):
     img_url = db.Column(db.String,)
 
     def __repr__(self):
-        return f"{self.title}"
+        return f"{self.title} rating: {self.rating} rank: {self.ranking}"
 
 
 with app.app_context():
     db.create_all()
 
 
-# new_movie = Movie(
-#     title="Phone Booth",
-#     year=2002,
-#     description="Publicist Stuart Shepard finds himself trapped in a phone booth, pinned down by an extortionist's "
-#                "sniper rifle. Unable to leave or receive outside help, Stuart's negotiation with the caller leads to "
-#                 "a jaw-dropping climax.",
-#     rating=7.3,
-#     ranking=10,
-#     review="My favourite character was the caller.",
-#     img_url="https://image.tmdb.org/t/p/w500/tjrX2oWRCM3Tvarz38zlZM7Uc10.jpg"
-# )
-# with app.app_context():
-#     db.session.add(new_movie)
-#     db.session.commit()
-
-
 @app.route("/")
 def home():
     top_movies = db.session.query(Movie).all()
-    return render_template('index.html', movies=top_movies)
+    top_movies.sort(key=lambda x: x.rating)
+    rank = len(top_movies)
+    for movie in top_movies:
+        Movie.query.get(movie.id).ranking = rank
+        db.session.commit()
+        rank -= 1
+    # add rankings
 
+    movies = top_movies
+    for movie in top_movies:
+        print(movie)
+
+    return render_template('index.html', movies=movies)
 
 class RateMovieForm(FlaskForm):
     rating = StringField('Your rating out of 10 e.g. 7.5', validators=[DataRequired()])
