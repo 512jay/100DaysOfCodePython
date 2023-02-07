@@ -44,7 +44,7 @@ with app.app_context():
 #     title="Phone Booth",
 #     year=2002,
 #     description="Publicist Stuart Shepard finds himself trapped in a phone booth, pinned down by an extortionist's "
-#                 "sniper rifle. Unable to leave or receive outside help, Stuart's negotiation with the caller leads to "
+#                "sniper rifle. Unable to leave or receive outside help, Stuart's negotiation with the caller leads to "
 #                 "a jaw-dropping climax.",
 #     rating=7.3,
 #     ranking=10,
@@ -97,11 +97,35 @@ class AddMovieForm(FlaskForm):
 
 
 @app.route("/add", methods=['GET', 'POST'])
-def add_movie():
+def select_movie():
     form = AddMovieForm()
     if form.validate_on_submit():
-        return redirect(url_for('home'))
+        movie = form.title.data
+        headers = {'Accept': 'application/json'}
+        url = f'https://api.themoviedb.org/3/search/movie?api_key={TMDB_KEY}&language=en-US' \
+              f'&query={movie}&page=1&include_adult=false'
+        response = requests.get(url, headers=headers)
+        results = response.json()['results']
+        # return results
+        return render_template('select.html', movie_list=results)
     return render_template('add.html', form=form)
+
+
+@app.route("/update/<int:movie_id>")
+def add_movie_to_db(movie_id):
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_KEY}"
+    response = requests.get(url)
+    data: str = response.text
+    return data
+    # title 
+    # 
+    # img_url
+    # 
+    # year
+    # 
+    # description
+    # new_movie = Movie(title=
+    # return redirect('home')
 
 
 if __name__ == '__main__':

@@ -13,9 +13,12 @@
 {% block content %}
 <div class="container">
     <h1 class="heading">Select Movie</h1>
-  <p>
-    <a href="#"> MOVIE TITLE - MOVIE RELEASE DATE</a>
-  </p>
+    {% for movie in movie_list %}
+      <p>
+        <a href="https://api.themoviedb.org/3/movie/{{movie.id}}?api_key=662293028261dcfff034e953fe399742&language=en-US">
+            {{movie.title}} - {{movie.release_date}}</a>
+      </p>
+    {% endfor %}
 
 </div>
 {% endblock %}
