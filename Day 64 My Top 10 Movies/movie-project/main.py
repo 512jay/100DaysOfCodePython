@@ -114,17 +114,16 @@ def select_movie():
 def add_movie_to_db(movie_id):
     url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_KEY}"
     response = requests.get(url)
-    data: str = response.text
-    return data
-    # title 
-    # 
-    # img_url
-    # 
-    # year
-    # 
-    # description
-    # new_movie = Movie(title=
-    # return redirect('home')
+    data = response.json()
+    title = data['title']
+    img_url = f"https://image.tmdb.org/t/p/w500{data['poster_path']}"
+    year = int(data['release_date'].split("-")[0])
+    description = data['overview']
+    new_movie = Movie(title=title, img_url=img_url, year=year, description=description)
+    db.session.add(new_movie)
+    db.session.commit()
+    movie = Movie.query.filter_by(title=title).first()
+    return redirect(url_for('rate_movie', id=movie.id))
 
 
 if __name__ == '__main__':
