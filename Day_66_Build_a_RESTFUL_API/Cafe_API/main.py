@@ -1,15 +1,17 @@
+import random
+
 from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-##Connect to Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cafes.db'
+# Connect to Database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../cafes.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-##Cafe TABLE Configuration
+# TABLE Configuration
 class Cafe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), unique=True, nullable=False)
@@ -23,20 +25,29 @@ class Cafe(db.Model):
     can_take_calls = db.Column(db.Boolean, nullable=False)
     coffee_price = db.Column(db.String(250), nullable=True)
 
+    def __repr__(self):
+        return f"{self.name}"
+
 
 @app.route("/")
 def home():
     return render_template("index.html")
-    
 
-## HTTP GET - Read Record
 
-## HTTP POST - Create Record
+@app.route("/random")
+def random_cafe():
+    cafes = db.session.query(Cafe).all()
+    return render_template("random.html", cafe=random.choice(cafes))
 
-## HTTP PUT/PATCH - Update Record
 
-## HTTP DELETE - Delete Record
+# HTTP GET - Read Record
+
+# HTTP POST - Create Record
+
+# HTTP PUT/PATCH - Update Record
+
+# HTTP DELETE - Delete Record
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
