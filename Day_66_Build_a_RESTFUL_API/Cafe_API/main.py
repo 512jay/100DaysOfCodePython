@@ -28,6 +28,9 @@ class Cafe(db.Model):
     def __repr__(self):
         return f"{self.name}"
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 @app.route("/")
 def home():
@@ -35,9 +38,31 @@ def home():
 
 
 @app.route("/random")
-def random_cafe():
+def get_random_cafe():
     cafes = db.session.query(Cafe).all()
-    return render_template("random.html", cafe=random.choice(cafes))
+    random_cafe = random.choice(cafes)
+    print(vars(random_cafe))
+    # random_cafe_dict = {
+    #     "cafe": {
+    #         "can_take_calls": random_cafe.can_take_calls,
+    #         "coffee_price": random_cafe.coffee_price,
+    #         "has_sockets": random_cafe.has_sockets,
+    #         "has_toilet": random_cafe.has_toilet,
+    #         "has_wifi": random_cafe.has_wifi,
+    #         "id": random_cafe.id,
+    #         "img_url": random_cafe.img_url,
+    #         "location": random_cafe.location,
+    #         "map_url": random_cafe.map_url,
+    #         "name": random_cafe.name,
+    #         "seats": random_cafe.seats,
+    #     }
+    # }
+    cafe_dictionary = dict(random_cafe.__dict__)
+    del cafe_dictionary["_sa_instance_state"]
+    return jsonify(cafe=cafe_dictionary)
+
+    # return jsonify(random_cafe_dict)
+    # return render_template("random.html", cafe=random_cafe)
 
 
 # HTTP GET - Read Record
