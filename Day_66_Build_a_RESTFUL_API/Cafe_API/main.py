@@ -46,11 +46,26 @@ class Cafe(db.Model):
         # return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
+with app.app_context():
+    db.create_all()
+
+
 # HTTP GET - Read Record
 
 # HTTP POST - Create Record
 
 # HTTP PUT/PATCH - Update Record
+@app.route("/update-price/<int:cafe_id>", methods=['PATCH'])
+def update_price(cafe_id):
+    new_price = request.args.get('new_price')
+    cafe_to_update = db.session.get(Cafe, cafe_id)
+    if cafe_to_update:
+        cafe_to_update.coffee_price = new_price
+        db.session.commit()
+        return jsonify(response={"success": "Successfully updated the price."})
+    else:
+        return jsonify(error={"Not Found": "Sorry a cafe with that id was not found in the database."})
+
 
 # HTTP DELETE - Delete Record
 @app.route("/")
@@ -98,29 +113,29 @@ def get_all_cafes():
 
 @app.route("/add", methods=['POST'])
 def add_cafe():
-    # cafes = db.session.query(Cafe).all()
-    # name = request.args.get("name")
-    # return jsonify(cafes=[cafe.to_dict() for cafe in cafes])
-    # request_data = request.get_json()
-    # name = request_data['name']
-    #  name = request_data['name']
     name = request.form['name']
     map_url = request.form['map_url']
     seats = request.form['seats']
     location = request.form['location']
-    img_url =request.form['img_url']
+    img_url = request.form['img_url']
     has_toilet = request.form['has_toilet'] == 'true'
     has_wifi = request.form['has_wifi'] == 'true'
     has_sockets = request.form['has_sockets'] == 'true'
     can_take_calls = request.form['can_take_calls'] == 'true'
     coffee_price = request.form['coffee_price']
-    new_cafe = Cafe(name=name, map_url=map_url, seats=seats, location=location, has_wifi=has_wifi, img_url=img_url,
-                    has_toilet=has_toilet, has_sockets=has_sockets, can_take_calls=can_take_calls, coffee_price=coffee_price)
+    new_cafe = Cafe(name=name,
+                    map_url=map_url,
+                    seats=seats,
+                    location=location,
+                    has_wifi=has_wifi,
+                    img_url=img_url,
+                    has_toilet=has_toilet,
+                    has_sockets=has_sockets,
+                    can_take_calls=can_take_calls,
+                    coffee_price=coffee_price)
 
     db.session.add(new_cafe)
     db.session.commit()
-    # with app.test_request_context('/add', method='POST'):
-    #     assert request.method == 'POST'
     return {
                 "response": {
                     "success": "Successfully added the new cafe.",
@@ -131,18 +146,16 @@ def add_cafe():
             }
 
 
-
 @app.route("/search")
 def search():
     cafes = db.session.query(Cafe).all()
     location_to_find = request.args.get("loc")
-    locations = [cafe.to_dict() for cafe in cafes if cafe.location==location_to_find]
+    locations = [cafe.to_dict() for cafe in cafes if cafe.location == location_to_find]
     if locations:
         return jsonify(locations)
     else:
-        return {"error": { "Not Found": "Sorry, we don't have a cafe at that location."}}
+        return {"error": {"Not Found": "Sorry, we don't have a cafe at that location."}}
     # cafes = db.session.query(Cafe).all()
-
 
 
 if __name__ == '__main__':
