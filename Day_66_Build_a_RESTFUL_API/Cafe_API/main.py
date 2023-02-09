@@ -93,7 +93,22 @@ def get_all_cafes():
     #     cafes_dict.append(cafe.to_dict())
     # return jsonify(cafes=cafes_dict)
     # Here is a good example of a list comprehension replacing a loop.
-    return jsonify(cafes=[cafe.to_dict() for cafe in cafes])
+    return jsonify(cafes=[cafe.to_dict() for cafe in cafes])@app.route("/all")
+
+
+@app.route("/add", methods=['POST'])
+def add_cafe():
+    # cafes = db.session.query(Cafe).all()
+    # name = request.args.get("name")
+    # return jsonify(cafes=[cafe.to_dict() for cafe in cafes])
+    result = {
+        "response":
+            {
+                "success": "Successfully added a new cafe."
+            }
+    }
+    return result
+
 
 
 @app.route("/search")
