@@ -62,9 +62,9 @@ def update_price(cafe_id):
     if cafe_to_update:
         cafe_to_update.coffee_price = new_price
         db.session.commit()
-        return jsonify(response={"success": "Successfully updated the price."})
+        return jsonify(response={"success": "Successfully updated the price."}), 200
     else:
-        return jsonify(error={"Not Found": "Sorry a cafe with that id was not found in the database."})
+        return jsonify(error={"Not Found": "Sorry a cafe with that id was not found in the database."}), 404
 
 
 # HTTP DELETE - Delete Record
