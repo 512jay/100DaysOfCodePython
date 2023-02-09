@@ -93,7 +93,7 @@ def get_all_cafes():
     #     cafes_dict.append(cafe.to_dict())
     # return jsonify(cafes=cafes_dict)
     # Here is a good example of a list comprehension replacing a loop.
-    return jsonify(cafes=[cafe.to_dict() for cafe in cafes])@app.route("/all")
+    return jsonify(cafes=[cafe.to_dict() for cafe in cafes])
 
 
 @app.route("/add", methods=['POST'])
@@ -101,13 +101,34 @@ def add_cafe():
     # cafes = db.session.query(Cafe).all()
     # name = request.args.get("name")
     # return jsonify(cafes=[cafe.to_dict() for cafe in cafes])
-    result = {
-        "response":
-            {
-                "success": "Successfully added a new cafe."
+    # request_data = request.get_json()
+    # name = request_data['name']
+    #  name = request_data['name']
+    name = request.form['name']
+    map_url = request.form['map_url']
+    seats = request.form['seats']
+    location = request.form['location']
+    img_url =request.form['img_url']
+    has_toilet = request.form['has_toilet'] == 'true'
+    has_wifi = request.form['has_wifi'] == 'true'
+    has_sockets = request.form['has_sockets'] == 'true'
+    can_take_calls = request.form['can_take_calls'] == 'true'
+    coffee_price = request.form['coffee_price']
+    new_cafe = Cafe(name=name, map_url=map_url, seats=seats, location=location, has_wifi=has_wifi, img_url=img_url,
+                    has_toilet=has_toilet, has_sockets=has_sockets, can_take_calls=can_take_calls, coffee_price=coffee_price)
+
+    db.session.add(new_cafe)
+    db.session.commit()
+    # with app.test_request_context('/add', method='POST'):
+    #     assert request.method == 'POST'
+    return {
+                "response": {
+                    "success": "Successfully added the new cafe.",
+                    "name": name,
+                    "map_url": map_url,
+                    "seats": seats
+                }
             }
-    }
-    return result
 
 
 
