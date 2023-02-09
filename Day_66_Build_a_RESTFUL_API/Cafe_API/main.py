@@ -89,11 +89,24 @@ def get_random_cafe():
 def get_all_cafes():
     cafes = db.session.query(Cafe).all()
     # cafes_dict = []
-    # for cafe in cafes:
+    # for café in cafes:
     #     cafes_dict.append(cafe.to_dict())
     # return jsonify(cafes=cafes_dict)
     # Here is a good example of a list comprehension replacing a loop.
     return jsonify(cafes=[cafe.to_dict() for cafe in cafes])
+
+
+@app.route("/search")
+def search():
+    cafes = db.session.query(Cafe).all()
+    location_to_find = request.args.get("loc")
+    locations = [cafe.to_dict() for cafe in cafes if cafe.location==location_to_find]
+    if locations:
+        return jsonify(locations)
+    else:
+        return {"error": { "Not Found": "Sorry, we don't have a cafe at that location."}}
+    # cafes = db.session.query(Cafe).all()
+
 
 
 if __name__ == '__main__':
