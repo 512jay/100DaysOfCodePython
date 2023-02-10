@@ -8,7 +8,6 @@ from flask_ckeditor import CKEditor, CKEditorField
 from datetime import date
 import bleach
 
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 app.config['CKEDITOR_PKG_TYPE'] = 'standard'
@@ -61,7 +60,6 @@ def show_post(index):
 @app.route("/new-post", methods=['GET', 'POST'])
 def create_new_post():
     form = CreatePostForm()
-    button_map = dict(submit='btn btn-primary')
     if form.validate_on_submit():
         # Save the data as a BlogPost object into the posts.db
         new_post = BlogPost(
@@ -75,12 +73,23 @@ def create_new_post():
         db.session.add(new_post)
         db.session.commit()
         return redirect(url_for("get_all_posts"))
-    return render_template('make-post.html', form=form)
+    return render_template('make-post.html', form=form, title="Create New Post")
 
 
-@app.route("/edit_post/<int:post_id>")
+# Add Ability to Edit Existing Blog Posts
+@app.route("/edit_post/<int:post_id>", methods=['GET', 'POST'])
 def edit_post(post_id):
-    pass
+    post = db.session.get(BlogPost, post_id)
+    edit_form = CreatePostForm(obj=post)
+    if edit_form.validate_on_submit():
+        post.title = edit_form.title.data
+        post.subtitle = edit_form.subtitle.data
+        post.body = strip_invalid_html(edit_form.body.data)
+        post.author = edit_form.author.data
+        post.img_url = edit_form.img_url.data
+        db.session.commit()
+        return redirect(url_for("show_post", index=post_id))
+    return render_template('make-post.html', form=edit_form, title="Edit Post")
 
 
 @app.route("/about")
@@ -93,7 +102,7 @@ def contact():
     return render_template("contact.html")
 
 
-## strips invalid tags/attributes
+# strips invalid tags/attributes
 def strip_invalid_html(content):
     allowed_tags = ['a', 'abbr', 'acronym', 'address', 'b', 'br', 'div', 'dl', 'dt',
                     'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img',
