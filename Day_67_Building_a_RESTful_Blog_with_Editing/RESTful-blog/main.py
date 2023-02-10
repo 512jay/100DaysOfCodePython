@@ -47,6 +47,15 @@ def get_all_posts():
     return render_template("index.html", all_posts=posts)
 
 
+# Be Able DELETE Blog Posts
+@app.route('/delete/<int:post_id>', methods=['GET', 'DELETE'])
+def delete_post(post_id):
+    post = db.session.get(BlogPost, post_id)
+    db.session.delete(post)
+    db.session.commit()
+    return redirect(url_for('get_all_posts'))
+
+
 @app.route("/post/<int:index>")
 def show_post(index):
     requested_post = None
