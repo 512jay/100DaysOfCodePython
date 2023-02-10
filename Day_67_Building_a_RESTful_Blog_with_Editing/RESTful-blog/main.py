@@ -5,7 +5,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, URL
 from flask_ckeditor import CKEditor, CKEditorField
-import datetime
+from datetime import date
+import bleach
 
 
 app = Flask(__name__)
@@ -66,15 +67,15 @@ def create_new_post():
         new_post = BlogPost(
             title=form.title.data,
             subtitle=form.subtitle.data,
-            date=datetime.date.today().strftime("%B %d, %Y"),
-            body=form.body.data,
+            date=date.today().strftime("%B %d, %Y"),
+            body=strip_invalid_html(form.body.data),
             author=form.author.data,
             img_url=form.img_url.data,
         )
         db.session.add(new_post)
         db.session.commit()
-        return redirect("/")
-    return render_template('make-post.html', form=form, button_map=button_map)
+        return redirect(url_for("get_all_posts"))
+    return render_template('make-post.html', form=form)
 
 
 @app.route("/edit_post/<int:post_id>")
@@ -90,6 +91,27 @@ def about():
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
+
+
+## strips invalid tags/attributes
+def strip_invalid_html(content):
+    allowed_tags = ['a', 'abbr', 'acronym', 'address', 'b', 'br', 'div', 'dl', 'dt',
+                    'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img',
+                    'li', 'ol', 'p', 'pre', 'q', 's', 'small', 'strike',
+                    'span', 'sub', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th',
+                    'thead', 'tr', 'tt', 'u', 'ul']
+
+    allowed_attrs = {
+        'a': ['href', 'target', 'title'],
+        'img': ['src', 'alt', 'width', 'height'],
+    }
+
+    cleaned = bleach.clean(content,
+                           tags=allowed_tags,
+                           attributes=allowed_attrs,
+                           strip=True)
+
+    return cleaned
 
 
 if __name__ == "__main__":
