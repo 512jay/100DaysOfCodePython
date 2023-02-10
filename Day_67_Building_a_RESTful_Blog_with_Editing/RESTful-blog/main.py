@@ -5,6 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, URL
 from flask_ckeditor import CKEditor, CKEditorField
+import datetime
 
 
 app = Flask(__name__)
@@ -61,7 +62,18 @@ def create_new_post():
     form = CreatePostForm()
     button_map = dict(submit='btn btn-primary')
     if form.validate_on_submit():
-        return "New post"
+        # Save the data as a BlogPost object into the posts.db
+        new_post = BlogPost(
+            title=form.title.data,
+            subtitle=form.subtitle.data,
+            date=datetime.date.today().strftime("%B %d, %Y"),
+            body=form.body.data,
+            author=form.author.data,
+            img_url=form.img_url.data,
+        )
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect("/")
     return render_template('make-post.html', form=form, button_map=button_map)
 
 
