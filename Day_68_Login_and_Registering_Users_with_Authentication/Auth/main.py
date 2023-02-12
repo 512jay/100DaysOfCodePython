@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = '38c3f7101d215271a968aeb51d0577416b25712b7711d38a009a
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-# login_manager.init_app(app)
+login_manager.init_app(app)
 
 
 # CREATE TABLE IN DB
