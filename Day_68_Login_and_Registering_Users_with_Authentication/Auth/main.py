@@ -8,7 +8,7 @@ login_manager = LoginManager()
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = '38c3f7101d215271a968aeb51d0577416b25712b7711d38a009a38c679772d55'
+app.config['SECRET_KEY'] = '38c3f7101d215271a968aeb51d0577416b25712b7711d38a009a38c679772d55John'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
