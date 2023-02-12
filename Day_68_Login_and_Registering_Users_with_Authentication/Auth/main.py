@@ -3,12 +3,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 
+# Login Manager
+login_manager = LoginManager()
+
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'any-secret-key-you-choose'
+app.config['SECRET_KEY'] = '38c3f7101d215271a968aeb51d0577416b25712b7711d38a009a38c679772d55'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+login_manager.init_app(app)
 
 
 # CREATE TABLE IN DB
@@ -38,15 +42,14 @@ def home():
 def register():
 
     if request.method == 'POST':
-        name = request.form['name']
         new_user = User(
             email=request.form['email'],
             password=request.form['password'],
-            name=name
+            name=request.form['name']
         )
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('secrets', name=name))
+        return redirect(url_for('secrets', name=new_user.name))
     return render_template("register.html")
 
 
@@ -67,7 +70,10 @@ def logout():
 
 @app.route('/download')
 def download():
-    pass
+    file_path = "files/cheat_sheet.pdf"
+    return send_from_directory(directory=app.static_folder, path='files/cheat_sheet.pdf')
+    # return send_from_directory(directory='static', path=file_path)
+
 
 
 if __name__ == "__main__":
