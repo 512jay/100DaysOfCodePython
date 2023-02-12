@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = '38c3f7101d215271a968aeb51d0577416b25712b7711d38a009a
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-login_manager.init_app(app)
+# login_manager.init_app(app)
 
 
 # CREATE TABLE IN DB
@@ -42,10 +42,15 @@ def home():
 def register():
 
     if request.method == 'POST':
+        hash_and_salted_password = generate_password_hash(
+            request.form.get('password'),
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
         new_user = User(
-            email=request.form['email'],
-            password=request.form['password'],
-            name=request.form['name']
+            email=request.form.get('email'),
+            name=request.form.get('name'),
+            password=hash_and_salted_password,
         )
         db.session.add(new_user)
         db.session.commit()
@@ -73,7 +78,6 @@ def download():
     file_path = "files/cheat_sheet.pdf"
     return send_from_directory(directory=app.static_folder, path='files/cheat_sheet.pdf')
     # return send_from_directory(directory='static', path=file_path)
-
 
 
 if __name__ == "__main__":
