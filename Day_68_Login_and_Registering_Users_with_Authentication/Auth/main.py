@@ -31,6 +31,9 @@ class User(UserMixin, db.Model):
 # Line below only required once, when creating DB.
 # with app.app_context():
 #     db.create_all()
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
 
 
 @app.route('/')
