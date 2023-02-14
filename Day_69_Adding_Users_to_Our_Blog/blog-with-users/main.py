@@ -45,6 +45,8 @@ def get_all_posts():
 @app.route('/register')
 def register():
     register_form = RegisterForm()
+    if register_form.validate_on_submit():
+        return "You submitted a registration"
     return render_template("register.html", form=register_form)
 
 
