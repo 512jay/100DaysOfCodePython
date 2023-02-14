@@ -32,6 +32,21 @@ class BlogPost(db.Model):
     img_url = db.Column(db.String(250), nullable=False)
 
 
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(1000))
+
+    def __init__(self, email, password, name):
+        self.email = email
+        self.password = password
+        self.name = name
+
+    def get_id(self):
+        return str(self.email)
+
+
 with app.app_context():
     db.create_all()
 
@@ -42,11 +57,23 @@ def get_all_posts():
     return render_template("index.html", all_posts=posts)
 
 
-@app.route('/register')
+@app.route('/register', methods=["GET", "POST"])
 def register():
     register_form = RegisterForm()
     if register_form.validate_on_submit():
-        return "You submitted a registration"
+        hash_and_salted_password = generate_password_hash(
+            password=register_form.password.data,
+            method="pbkdf2:sha256",
+            salt_length=16,
+        )
+        new_user = User(
+            email=register_form.email.data,
+            name=register_form.name.data,
+            password=hash_and_salted_password,
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for("get_all_posts"))
     return render_template("register.html", form=register_form)
 
 
@@ -125,4 +152,4 @@ def delete_post(post_id):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
