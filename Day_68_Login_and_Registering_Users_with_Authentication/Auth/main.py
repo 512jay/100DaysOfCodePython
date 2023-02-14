@@ -51,6 +51,9 @@ def register():
 
     if request.method == 'POST':
         user_email = request.form.get('email')
+        if user_email in all_email_list():
+            flash("An account with this email already exists")
+            return render_template("register.html")
         hash_and_salted_password = generate_password_hash(
             request.form.get('password'),
             method='pbkdf2:sha256',
@@ -74,14 +77,17 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        all_users = db.session.query(User).all()
-        for user in all_users:
-            if email == user.email:
-                user_to_check = db.session.execute(db.select(User).filter_by(email=email)).scalar_one()
-                if check_password_hash(password=password, pwhash=user_to_check.password):
-                    user = load_user(email)
-                    login_user(user)
-                    return redirect(url_for("secrets"))
+
+        if email in all_email_list():
+            user_to_check = db.session.execute(db.select(User).filter_by(email=email)).scalar_one()
+            if check_password_hash(password=password, pwhash=user_to_check.password):
+                login_user(load_user(email))
+                flash('You were successfully logged in')
+                return redirect(url_for("secrets"))
+            else:
+                flash("Wrong password!")
+        else:
+            flash("Email account does not exist")
     return render_template("login.html")
 
 
@@ -95,6 +101,7 @@ def secrets():
 @login_required
 def logout():
     logout_user()
+    flash("You have been logged out")
     return redirect(url_for('home'))
 
 
@@ -102,6 +109,12 @@ def logout():
 @login_required
 def download():
     return send_from_directory(directory=app.static_folder, path='files/cheat_sheet.pdf')
+
+
+def all_email_list():
+    all_users = db.session.query(User).all()
+    the_list = [user.email for user in all_users]
+    return the_list
 
 
 if __name__ == "__main__":
