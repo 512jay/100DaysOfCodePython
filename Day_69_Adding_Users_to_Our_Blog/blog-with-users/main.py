@@ -78,8 +78,9 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
+        login_user(load_user(new_user.id))
         flash("Registration Successful")
-        return redirect(url_for("login"))
+        return redirect(url_for("get_all_posts"))
 
     return render_template("register.html", form=register_form)
 
