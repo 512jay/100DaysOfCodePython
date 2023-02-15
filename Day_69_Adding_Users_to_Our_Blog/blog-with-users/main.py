@@ -13,6 +13,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 ckeditor = CKEditor(app)
 Bootstrap(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 # CONNECT TO DB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
@@ -44,12 +46,14 @@ class User(UserMixin, db.Model):
         self.password = password
         self.name = name
 
-    def get_id(self):
-        return str(self.email)
-
 
 with app.app_context():
     db.create_all()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.execute(db.select(User).filter_by(id=user_id)).scalar_one()
 
 
 @app.route('/')
@@ -74,8 +78,8 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
-
-        return redirect(url_for("get_all_posts"))
+        flash("Registration Successful")
+        return redirect(url_for("login"))
 
     return render_template("register.html", form=register_form)
 
@@ -86,17 +90,21 @@ def login():
     if login_form.validate_on_submit():
         user = db.session.execute(db.select(User).filter_by(email=login_form.email.data)).scalar_one()
         if check_password_hash(pwhash=user.password, password=login_form.password.data):
+            login_user(load_user(user.id))
             flash("You were successfully logged in")
             return redirect(url_for("get_all_posts"))
     return render_template("login.html", form=login_form)
 
 
 @app.route('/logout')
+@login_required
 def logout():
+    logout_user()
     return redirect(url_for('get_all_posts'))
 
 
 @app.route("/post/<int:post_id>")
+@login_required
 def show_post(post_id):
     requested_post = BlogPost.query.get(post_id)
     return render_template("post.html", post=requested_post)
