@@ -100,21 +100,24 @@ def register():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    login_form = LoginForm()
-    if login_form.validate_on_submit():
-        try:
-            user = db.session.execute(db.select(User).filter_by(email=login_form.email.data)).scalar_one()
-        except NoResultFound:
-            print(sys.exc_info())  # Useful for determining exception name.
-            flash("That email does not exist in our database.")
-            return render_template("login.html", form=login_form)
-        if check_password_hash(pwhash=user.password, password=login_form.password.data):
-            login_user(load_user(user.id))
-            flash("You were successfully logged in")
-            return redirect(url_for("get_all_posts"))
+    form = LoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        user = User.query.filter_by(email=email).first()
+        # Email doesn't exist
+        if not user:
+            flash("That email does not exist, please try again.")
+            return render_template("login.html", form=form)
+        # Password incorrect
+        elif not check_password_hash(user.password, password):
+            flash('Password incorrect, please try again.')
+            return render_template("login.html", form=form)
         else:
-            flash("Password incorrect, please try again!")
-    return render_template("login.html", form=login_form)
+            login_user(user)
+            return redirect(url_for('get_all_posts'))
+    return render_template("login.html", form=form)
 
 
 @app.route('/logout')
