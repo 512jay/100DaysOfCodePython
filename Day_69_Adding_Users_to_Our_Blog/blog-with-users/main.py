@@ -60,13 +60,16 @@ def load_user(user_id):
     return db.session.execute(db.select(User).filter_by(id=user_id)).scalar_one()
 
 
+# Create admin-only decorator
 def admin_only(f):
     @wraps(f)
-    def wrapper(*args, **kwargs):
+    def decorated_function(*args, **kwargs):
+        # If id is not 1 then return abort with 403 error
         if current_user.id != 1:
             return abort(403)
+        # Otherwise continue with the route function
         return f(*args, **kwargs)
-    return wrapper
+    return decorated_function
 
 
 @app.route('/')
@@ -153,7 +156,7 @@ def contact():
     return render_template("contact.html")
 
 
-@app.route("/new-post")
+@app.route("/new-post", methods=['GET', 'POST'])
 @login_required
 @admin_only
 def add_new_post():
@@ -164,7 +167,7 @@ def add_new_post():
             subtitle=form.subtitle.data,
             body=form.body.data,
             img_url=form.img_url.data,
-            author=current_user,
+            author=current_user.name,
             date=date.today().strftime("%B %d, %Y")
         )
         db.session.add(new_post)
@@ -173,7 +176,7 @@ def add_new_post():
     return render_template("make-post.html", form=form)
 
 
-@app.route("/edit-post/<int:post_id>")
+@app.route("/edit-post/<int:post_id>", methods=['GET', 'POST'])
 @login_required
 @admin_only
 def edit_post(post_id):
@@ -189,7 +192,7 @@ def edit_post(post_id):
         post.title = edit_form.title.data
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
-        post.author = edit_form.author.data
+        # post.author = edit_form.author.data
         post.body = edit_form.body.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
