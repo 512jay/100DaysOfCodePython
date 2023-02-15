@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import CreatePostForm, RegisterForm
+from forms import CreatePostForm, RegisterForm, LoginForm
 from flask_gravatar import Gravatar
 
 app = Flask(__name__)
@@ -80,9 +80,15 @@ def register():
     return render_template("register.html", form=register_form)
 
 
-@app.route('/login')
+@app.route('/login', methods=["GET", "POST"])
 def login():
-    return render_template("login.html")
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        user = db.session.execute(db.select(User).filter_by(email=login_form.email.data)).scalar_one()
+        if check_password_hash(pwhash=user.password, password=login_form.password.data):
+            flash("You were successfully logged in")
+            return redirect(url_for("get_all_posts"))
+    return render_template("login.html", form=login_form)
 
 
 @app.route('/logout')
