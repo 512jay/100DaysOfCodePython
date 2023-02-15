@@ -1,11 +1,10 @@
-import sys
-
 import sqlalchemy
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
 
+from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
@@ -59,6 +58,15 @@ with app.app_context():
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.execute(db.select(User).filter_by(id=user_id)).scalar_one()
+
+
+def admin_only(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if current_user.id != 1:
+            return abort(403)
+        return f(*args, **kwargs)
+    return wrapper
 
 
 @app.route('/')
@@ -146,6 +154,8 @@ def contact():
 
 
 @app.route("/new-post")
+@login_required
+@admin_only
 def add_new_post():
     form = CreatePostForm()
     if form.validate_on_submit():
@@ -164,6 +174,8 @@ def add_new_post():
 
 
 @app.route("/edit-post/<int:post_id>")
+@login_required
+@admin_only
 def edit_post(post_id):
     post = BlogPost.query.get(post_id)
     edit_form = CreatePostForm(
@@ -182,10 +194,12 @@ def edit_post(post_id):
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
 
-    return render_template("make-post.html", form=edit_form)
+    return render_template("make-post.html", form=edit_form, is_edit=True)
 
 
 @app.route("/delete/<int:post_id>")
+@login_required
+@admin_only
 def delete_post(post_id):
     post_to_delete = BlogPost.query.get(post_id)
     db.session.delete(post_to_delete)
