@@ -1,10 +1,15 @@
+import sys
+
+import sqlalchemy
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
+from sqlalchemy.exc import NoResultFound
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from forms import CreatePostForm, RegisterForm, LoginForm
 from flask_gravatar import Gravatar
@@ -69,7 +74,7 @@ def register():
 
         # If user's email already exists
         if User.query.filter_by(email=register_form.email.data).first():
-            # Send flash messsage
+            # Send flash message
             flash("You've already signed up with that email, log in instead!")
             # Redirect to /login route.
             return redirect(url_for('login'))
@@ -97,11 +102,18 @@ def register():
 def login():
     login_form = LoginForm()
     if login_form.validate_on_submit():
-        user = db.session.execute(db.select(User).filter_by(email=login_form.email.data)).scalar_one()
+        try:
+            user = db.session.execute(db.select(User).filter_by(email=login_form.email.data)).scalar_one()
+        except NoResultFound:
+            print(sys.exc_info())  # Useful for determining exception name.
+            flash("That email does not exist in our database.")
+            return render_template("login.html", form=login_form)
         if check_password_hash(pwhash=user.password, password=login_form.password.data):
             login_user(load_user(user.id))
             flash("You were successfully logged in")
             return redirect(url_for("get_all_posts"))
+        else:
+            flash("Password incorrect, please try again!")
     return render_template("login.html", form=login_form)
 
 
@@ -109,6 +121,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash("Logged out")
     return redirect(url_for('get_all_posts'))
 
 
