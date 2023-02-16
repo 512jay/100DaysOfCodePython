@@ -32,8 +32,8 @@ class User(UserMixin, db.Model):    # Parent
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(100))
-    children = db.relationship("BlogPost", backref="user")
-    # children = db.relationship("BlogPost", backref="user")
+    # a link to the posts made by this user
+    posts = db.relationship("BlogPost", back_populates="author")
 
     def __init__(self, email, password, name):
         self.email = email
@@ -48,13 +48,13 @@ class User(UserMixin, db.Model):    # Parent
 class BlogPost(db.Model):   # Child
     __tablename__ = "blog_posts"
     id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.String(250), db.ForeignKey("user.id"), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    author = relationship("User", back_populates="posts")
     title = db.Column(db.String(250), unique=True, nullable=False)
     subtitle = db.Column(db.String(250), nullable=False)
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
-    # user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 
 with app.app_context():
@@ -172,7 +172,7 @@ def add_new_post():
             subtitle=form.subtitle.data,
             body=form.body.data,
             img_url=form.img_url.data,
-            author=current_user.name,
+            author=current_user,
             date=date.today().strftime("%B %d, %Y")
         )
         db.session.add(new_post)
@@ -197,7 +197,7 @@ def edit_post(post_id):
         post.title = edit_form.title.data
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
-        # post.author = edit_form.author.data
+        post.author = edit_form.author.data
         post.body = edit_form.body.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
