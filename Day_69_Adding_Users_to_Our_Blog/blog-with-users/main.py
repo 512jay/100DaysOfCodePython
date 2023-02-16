@@ -26,29 +26,35 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-# CONFIGURE TABLES
-class BlogPost(db.Model):
-    __tablename__ = "blog_posts"
-    id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.String(250), nullable=False)
-    title = db.Column(db.String(250), unique=True, nullable=False)
-    subtitle = db.Column(db.String(250), nullable=False)
-    date = db.Column(db.String(250), nullable=False)
-    body = db.Column(db.Text, nullable=False)
-    img_url = db.Column(db.String(250), nullable=False)
-
-
-class User(UserMixin, db.Model):
+class User(UserMixin, db.Model):    # Parent
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(100))
+    children = db.relationship("BlogPost", backref="user")
+    # children = db.relationship("BlogPost", backref="user")
 
     def __init__(self, email, password, name):
         self.email = email
         self.password = password
         self.name = name
+
+    def __repr__(self):
+        return f"<User '{self.name}'>"
+
+
+# CONFIGURE TABLES
+class BlogPost(db.Model):   # Child
+    __tablename__ = "blog_posts"
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.String(250), db.ForeignKey("user.id"), nullable=False)
+    title = db.Column(db.String(250), unique=True, nullable=False)
+    subtitle = db.Column(db.String(250), nullable=False)
+    date = db.Column(db.String(250), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    img_url = db.Column(db.String(250), nullable=False)
+    # user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 
 with app.app_context():
@@ -140,7 +146,6 @@ def logout():
 
 
 @app.route("/post/<int:post_id>")
-@login_required
 def show_post(post_id):
     requested_post = BlogPost.query.get(post_id)
     return render_template("post.html", post=requested_post)
