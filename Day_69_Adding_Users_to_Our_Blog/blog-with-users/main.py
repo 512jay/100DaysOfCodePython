@@ -37,6 +37,7 @@ class User(UserMixin, db.Model):    # Parent
     name = db.Column(db.String(100))
     # a link to the posts made by this user
     posts = db.relationship("BlogPost", back_populates="author")
+    comments = relationship("Comment", back_populates="comment_author")
 
     def __init__(self, email, password, name):
         self.email = email
@@ -58,6 +59,22 @@ class BlogPost(db.Model):   # Child
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
+    # *******Add parent relationship*******#
+    # "comment_author" refers to the comment_author property in the Comment class.
+    comments = relationship("Comment", back_populates="article")
+
+
+class Comment(db.Model):    # Child of a child
+    __tablename__ = "comments"
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    article_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"))
+    article = relationship("BlogPost", back_populates="comments")
+    # *******Add child relationship*******#
+    # "users.id" The users refers to the tablename of the Users class.
+    # "comments" refers to the comments property in the User class.
+    comment_author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    comment_author = relationship("User", back_populates="comments")
 
 
 with app.app_context():
