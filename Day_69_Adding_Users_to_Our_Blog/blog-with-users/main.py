@@ -37,6 +37,8 @@ class User(UserMixin, db.Model):    # Parent
     name = db.Column(db.String(100))
     # a link to the posts made by this user
     posts = db.relationship("BlogPost", back_populates="author")
+    # *******Add parent relationship*******#
+    # "comment_author" refers to the comment_author property in the Comment class.
     comments = relationship("Comment", back_populates="comment_author")
 
     def __init__(self, email, password, name):
@@ -65,6 +67,7 @@ class BlogPost(db.Model):   # Child
 
 
 class Comment(db.Model):    # Child of a child
+    """text and generated id"""
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
@@ -165,10 +168,22 @@ def logout():
     return redirect(url_for('get_all_posts'))
 
 
-@app.route("/post/<int:post_id>")
+@app.route("/post/<int:post_id>", methods=['GET', 'POST'])
 def show_post(post_id):
     form = CommentForm()
     requested_post = BlogPost.query.get(post_id)
+    if form.validate_on_submit():
+        if not current_user.is_authenticated:
+            flash("You need to login or register to comment")
+            return redirect(url_for('login'))
+        else:
+            new_comment = Comment(
+                text=form.comment.data,
+                comment_author=current_user,
+                article=requested_post,
+            )
+            db.session.add(new_comment)
+            db.session.commit()
     return render_template("post.html", post=requested_post, form=form)
 
 

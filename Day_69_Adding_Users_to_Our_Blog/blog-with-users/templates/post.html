@@ -36,26 +36,26 @@
 
 
 <!--           Comments Area -->
-            {% if current_user.is_authenticated: %}
-  <!--          #Load the CKEditor-->
-              {{ ckeditor.load() }}
-  <!--          #Configure it with the name of the form field from CommentForm-->
-              {{ ckeditor.config(name='comment_text') }}
-  <!--          #Create the wtf quickform from CommentForm-->
-              {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
-            {% endif %}
+<!--          #Load the CKEditor-->
+            {{ ckeditor.load() }}
+<!--          #Configure it with the name of the form field from CommentForm-->
+            {{ ckeditor.config(name='comment') }}
+<!--          #Create the wtf quick-form from CommentForm-->
+            {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
           <div class="col-lg-8 col-md-10 mx-auto comment">
               <ul class="commentList">
-                <li>
-                    <div class="commenterImage">
-                      <img src="https://www.cmcaindia.org/wp-content/uploads/2015/11/default-profile-picture-gmail-2.png"/>
-                    </div>
-                    <div class="commentText">
-                      <p>Some comment</p>
+                {% for comment in post.comments: %}
+                  <li>
+                      <div class="commenterImage">
+                        <img src="https://www.cmcaindia.org/wp-content/uploads/2015/11/default-profile-picture-gmail-2.png"/>
+                      </div>
+                      <div class="commentText">
+                        <p>{{ comment.text | safe }}</p>
 
-                      <span class="date sub-text">comment author name</span>
-                    </div>
-                </li>
+                        <span class="date sub-text">{{ comment.comment_author.name }}</span>
+                      </div>
+                  </li>
+                {% endfor %}
               </ul>
             </div>
           </div>
