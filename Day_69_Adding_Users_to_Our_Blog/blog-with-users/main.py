@@ -1,4 +1,4 @@
-# import sqlalchemy
+import os
 from flask import Flask, render_template, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
@@ -11,6 +11,7 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 
+
 app = Flask(__name__)
 
 gravatar = Gravatar(app,
@@ -22,7 +23,8 @@ gravatar = Gravatar(app,
                     use_ssl=False,
                     base_url=None)
 
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get("THE_SECRET_KEY")
+# app.config['SECRET_KEY'] = secrets.token_urlsafe(32)
 Bootstrap(app)
 
 # Configure and start Login Manager
