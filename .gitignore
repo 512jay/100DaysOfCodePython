@@ -438,3 +438,4 @@ cython_debug/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/flask
+/Day_69_Adding_Users_to_Our_Blog/blog-with-users/static/img/pexels-photo-1982966.jpeg
